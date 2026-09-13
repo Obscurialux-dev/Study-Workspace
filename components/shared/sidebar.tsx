@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, type ReactNode } from "react";
 
+import { SidebarCourses } from "./sidebar-courses";
 import { createClient } from "@/lib/supabase/client";
 
 function NavIcon({ children }: { children: ReactNode }) {
@@ -123,25 +124,6 @@ export function Sidebar() {
     }
   }
 
-  const navLinks = NAV_ITEMS.map((item) => {
-    const active = isActive(pathname, item.href);
-    return (
-      <Link
-        key={item.href}
-        href={item.href}
-        aria-current={active ? "page" : undefined}
-        className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-          active
-            ? "bg-slate-900 text-white"
-            : "text-slate-700 hover:bg-slate-100 hover:text-slate-900"
-        }`}
-      >
-        {item.icon}
-        {item.label}
-      </Link>
-    );
-  });
-
   return (
     <>
       {/* Mobile top bar */}
@@ -221,7 +203,26 @@ export function Sidebar() {
         </div>
 
         <nav className="flex flex-1 flex-col gap-1 overflow-y-auto p-3">
-          {navLinks}
+          {NAV_ITEMS.map((item) => {
+            const active = isActive(pathname, item.href);
+            return (
+              <div key={item.href} className="flex flex-col gap-1">
+                <Link
+                  href={item.href}
+                  aria-current={active ? "page" : undefined}
+                  className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                    active
+                      ? "bg-slate-900 text-white"
+                      : "text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+                  }`}
+                >
+                  {item.icon}
+                  {item.label}
+                </Link>
+                {item.href === "/courses" ? <SidebarCourses /> : null}
+              </div>
+            );
+          })}
         </nav>
 
         <div className="shrink-0 border-t border-slate-200 p-3">

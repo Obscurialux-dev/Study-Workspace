@@ -1,17 +1,33 @@
 import { PageHeader } from "@/components/shared/page-header";
-import { EmptyState } from "@/components/ui/empty-state";
+import { ErrorState } from "@/components/ui/error-state";
+import { createClient } from "@/lib/supabase/server";
 
-export default function CoursesPage() {
+import { CoursesClient } from "./courses-client";
+
+// Reads the auth session and RLS-scoped data; render per request.
+export const dynamic = "force-dynamic";
+
+export default async function CoursesPage() {
+  const supabase = await createClient();
+  const { data: courses, error } = await supabase
+    .from("courses")
+    .select("*")
+    .order("created_at", { ascending: true });
+
   return (
     <>
       <PageHeader
         title="Courses"
         description="Your courses for the current semester."
       />
-      <EmptyState
-        title="No courses yet"
-        description="Courses you add will be listed and managed here."
-      />
+      {error ? (
+        <ErrorState
+          title="Could not load your courses"
+          message="An error occurred while loading your courses. Please try again."
+        />
+      ) : (
+        <CoursesClient courses={courses ?? []} />
+      )}
     </>
   );
 }

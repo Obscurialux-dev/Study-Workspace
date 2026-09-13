@@ -32,11 +32,11 @@ works. - Database connection works. - RLS is active.
 
 ### Phase 2: Courses
 
--   [ ] Course CRUD.
--   [ ] Course list.
--   [ ] Course overview.
--   [ ] Course navigation.
--   [ ] Empty states.
+-   [x] Course CRUD.
+-   [x] Course list.
+-   [x] Course overview.
+-   [x] Course navigation.
+-   [x] Empty states.
 
 Acceptance: - User can create, edit, delete, and open a course. - Course
 data persists after refresh.
@@ -139,12 +139,13 @@ Only add embeddings/pgvector if text search becomes insufficient.
 
 ## 2. Current Task
 
-CURRENT_PHASE: Phase 2
+CURRENT_PHASE: Phase 3
 
-CURRENT_TASK: Phase 2 — Courses (Course CRUD, course list, course
-overview, course navigation, empty states).
+CURRENT_TASK: Phase 3 — Tuton (Tuton session CRUD, session timeline,
+activity status, deadline display, overall Tuton progress, and seeding
+the 8-session schedule from the supplied 2026/2027 Tuton schedule).
 
-Phase 1 foundation is complete and validated (typecheck, lint, build
+Phase 2 (Courses) is complete and validated (typecheck, lint, build
 pass). Do not implement AI, exam simulation, or advanced analytics yet.
 
 ## 3. Definition of Done
