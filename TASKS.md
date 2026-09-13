@@ -43,12 +43,12 @@ data persists after refresh.
 
 ### Phase 3: Tuton
 
--   [ ] Tuton session CRUD.
--   [ ] Session timeline.
--   [ ] Activity status.
--   [ ] Deadline display.
--   [ ] Overall Tuton progress.
--   [ ] Seed the 8-session schedule from the supplied 2026/2027 Tuton
+-   [x] Tuton session CRUD.
+-   [x] Session timeline.
+-   [x] Activity status.
+-   [x] Deadline display.
+-   [x] Overall Tuton progress.
+-   [x] Seed the 8-session schedule from the supplied 2026/2027 Tuton
     schedule.
 
 Seed schedule:
@@ -139,14 +139,14 @@ Only add embeddings/pgvector if text search becomes insufficient.
 
 ## 2. Current Task
 
-CURRENT_PHASE: Phase 3
+CURRENT_PHASE: Phase 4
 
-CURRENT_TASK: Phase 3 — Tuton (Tuton session CRUD, session timeline,
-activity status, deadline display, overall Tuton progress, and seeding
-the 8-session schedule from the supplied 2026/2027 Tuton schedule).
+CURRENT_TASK: Phase 4 — Academic Workspace (Materials CRUD, Notes CRUD,
+Assignments CRUD, Discussions CRUD, search/filter, file upload,
+course-specific organization).
 
-Phase 2 (Courses) is complete and validated (typecheck, lint, build
-pass). Do not implement AI, exam simulation, or advanced analytics yet.
+Phase 3 (Tuton) is complete and validated (typecheck, lint, build pass).
+Do not implement AI, exam simulation, or advanced analytics yet.
 
 ## 3. Definition of Done
 
