@@ -10,6 +10,8 @@ const STATUS_STYLES: Record<string, string> = {
   upcoming: "bg-slate-100 text-slate-600",
   active: "bg-blue-100 text-blue-700",
   completed: "bg-emerald-50 text-emerald-700",
+  not_started: "bg-slate-100 text-slate-600",
+  in_progress: "bg-blue-100 text-blue-700",
 };
 
 export function StatusBadge({ status }: { status: string }) {

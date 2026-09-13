@@ -74,13 +74,13 @@ overlapping dates. - Do not assume every session is exactly 7 days.
 
 ### Phase 4: Academic Workspace
 
--   [ ] Materials CRUD.
--   [ ] Notes CRUD.
--   [ ] Assignments CRUD.
--   [ ] Discussions CRUD.
--   [ ] Search/filter.
--   [ ] File upload.
--   [ ] Course-specific organization.
+-   [x] Materials CRUD.
+-   [x] Notes CRUD.
+-   [x] Assignments CRUD.
+-   [x] Discussions CRUD.
+-   [x] Search/filter.
+-   [x] File upload.
+-   [x] Course-specific organization.
 
 Acceptance: User can use the app as a real semester workspace without
 AI.
@@ -139,14 +139,16 @@ Only add embeddings/pgvector if text search becomes insufficient.
 
 ## 2. Current Task
 
-CURRENT_PHASE: Phase 4
+CURRENT_PHASE: Phase 5
 
-CURRENT_TASK: Phase 4 — Academic Workspace (Materials CRUD, Notes CRUD,
-Assignments CRUD, Discussions CRUD, search/filter, file upload,
-course-specific organization).
+CURRENT_TASK: Phase 5 — Dashboard (course progress cards, Tuton
+progress, upcoming deadlines, recent activity, quick actions, empty
+states). The broader course progress formula (Tuton 50%, Assignments
+25%, Discussions 25%) is introduced here.
 
-Phase 3 (Tuton) is complete and validated (typecheck, lint, build pass).
-Do not implement AI, exam simulation, or advanced analytics yet.
+Phase 4 (Academic Workspace) is complete and validated (typecheck, lint,
+build pass). Do not implement AI, exam simulation, or advanced
+analytics yet.
 
 ## 3. Definition of Done
 
