@@ -3,6 +3,7 @@ import Link from "next/link";
 import { CreateCourseAction, DashboardQuickActions } from "./dashboard-actions";
 import {
   formatAcademicDate,
+  isPastDeadline,
   StatusBadge,
 } from "@/components/shared/tuton-status";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -258,15 +259,28 @@ function TutonOverview({
   const progress =
     sessions.length > 0 ? (completed / sessions.length) * 100 : 0;
 
-  // Current or upcoming session: the first not-completed session sorted by
-  // its stored start date. Dates are used exactly as stored — overlapping
-  // manual dates are never normalized or regenerated.
-  const nextSession = [...sessions]
-    .filter((s) => s.status !== "completed")
-    .sort((a, b) => a.start_date.localeCompare(b.start_date))[0];
+  // Dashboard communicates "this session/week → all courses": sessions are
+  // displayed session_number ASC, then stored start_date ASC, then course
+  // code ASC (course_id as the final unique tie-breaker). This sorts the
+  // already-loaded rows for display only — the dedicated /tuton page and
+  // all stored data are untouched.
+  const orderedSessions = [...sessions].sort((a, b) => {
+    if (a.session_number !== b.session_number) {
+      return a.session_number - b.session_number;
+    }
+    if (a.start_date !== b.start_date) {
+      return a.start_date.localeCompare(b.start_date);
+    }
+    const codeA = courseById.get(a.course_id)?.code ?? "";
+    const codeB = courseById.get(b.course_id)?.code ?? "";
+    if (codeA !== codeB) {
+      return codeA.localeCompare(codeB);
+    }
+    return a.course_id.localeCompare(b.course_id);
+  });
 
   return (
-    <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+    <section className="flex h-full flex-col rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
       <div className="flex items-center justify-between gap-3">
         <h2 className="text-sm font-semibold text-slate-900">Tuton overview</h2>
         {sessions.length > 0 ? (
@@ -290,31 +304,51 @@ function TutonOverview({
           <p className="mt-2 text-xs text-slate-500">
             {completed} of {sessions.length} sessions completed
           </p>
-          {nextSession ? (
-            <div className="mt-4 rounded-md border border-slate-200 bg-slate-50 p-3">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <div className="flex min-w-0 items-center gap-2.5">
-                  <span
-                    className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-900 text-[11px] font-semibold text-white"
-                    aria-hidden="true"
-                  >
-                    {nextSession.session_number}
-                  </span>
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-slate-900">
-                      {nextSession.title}
-                    </p>
-                    <p className="text-xs text-slate-500">
-                      {courseById.get(nextSession.course_id)?.code ?? "Course"}{" "}
-                      · {formatAcademicDate(nextSession.start_date)} &ndash;{" "}
-                      {formatAcademicDate(nextSession.end_date)}
-                    </p>
+          {/* Scrollable session list (~7 visible rows). Header, percentage,
+              progress bar and summary stay outside the scroll area. Every
+              session appears exactly once, ordered session-first. flex-1
+              lets the list absorb any leftover card height on desktop so
+              both cards in the row end at the same bottom edge. */}
+          <div className="scroll-subtle mt-4 max-h-[25rem] min-h-0 flex-1 overflow-y-auto pr-1">
+            <ul className="divide-y divide-slate-100">
+              {orderedSessions.map((session) => (
+                <li
+                  key={session.id}
+                  className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 py-2.5"
+                >
+                  <div className="flex min-w-0 items-center gap-3">
+                    <span
+                      className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-900 text-[11px] font-semibold text-white"
+                      aria-hidden="true"
+                    >
+                      {session.session_number}
+                    </span>
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium text-slate-900">
+                        {session.title}
+                      </p>
+                      <p className="text-xs text-slate-500">
+                        {courseById.get(session.course_id)?.code ?? "Course"}{" "}
+                        · {formatAcademicDate(session.start_date)} &ndash;{" "}
+                        {formatAcademicDate(session.end_date)}
+                        {session.activity_label
+                          ? ` · ${session.activity_label}`
+                          : ""}
+                      </p>
+                    </div>
                   </div>
-                </div>
-                <StatusBadge status={nextSession.status} />
-              </div>
-            </div>
-          ) : null}
+                  <div className="flex items-center gap-2">
+                    {isPastDeadline(session.end_date, session.status) ? (
+                      <span className="text-xs font-medium text-red-600">
+                        Past deadline
+                      </span>
+                    ) : null}
+                    <StatusBadge status={session.status} />
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
         </>
       )}
     </section>
@@ -324,7 +358,7 @@ function TutonOverview({
 
 function UpcomingDeadlines({ items }: { items: UpcomingItem[] }) {
   return (
-    <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+    <section className="flex h-full flex-col rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
       <h2 className="text-sm font-semibold text-slate-900">
         Upcoming deadlines
       </h2>
@@ -334,28 +368,30 @@ function UpcomingDeadlines({ items }: { items: UpcomingItem[] }) {
           here.
         </p>
       ) : (
-        <ul className="mt-3 divide-y divide-slate-100">
-          {items.map((item) => (
-            <li key={item.key} className="py-2.5">
-              <Link
-                href={item.href}
-                className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1"
-              >
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-medium text-slate-900">
-                    {item.title}
-                  </p>
-                  <p className="text-xs text-slate-500">
-                    {item.courseCode} · {item.type}
-                  </p>
-                </div>
-                <span className="text-xs font-medium text-slate-600">
-                  {formatAcademicDate(item.date)}
-                </span>
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <div className="scroll-subtle mt-3 max-h-[25rem] min-h-0 flex-1 overflow-y-auto pr-1 lg:max-h-[28rem]">
+          <ul className="divide-y divide-slate-100">
+            {items.map((item) => (
+              <li key={item.key} className="py-2.5">
+                <Link
+                  href={item.href}
+                  className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1"
+                >
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium text-slate-900">
+                      {item.title}
+                    </p>
+                    <p className="text-xs text-slate-500">
+                      {item.courseCode} · {item.type}
+                    </p>
+                  </div>
+                  <span className="text-xs font-medium text-slate-600">
+                    {formatAcademicDate(item.date)}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
     </section>
   );
@@ -629,7 +665,10 @@ function DashboardContent({ data }: { data: DashboardData }) {
         </div>
       </section>
 
-      {/* Upcoming deadlines + Tuton overview */}
+      {/* Upcoming deadlines + Tuton overview. Cards stretch to a shared row
+          height on desktop (equal tops and bottoms); each card is a flex
+          column so its scroll list absorbs the remaining space instead of
+          leaving an empty gap. On mobile the cards stack naturally. */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <UpcomingDeadlines items={upcoming} />
         <TutonOverview sessions={sessions} courseById={courseById} />

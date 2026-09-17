@@ -212,6 +212,26 @@ The Study Analytics workspace (`/analytics`, Phase 9):
     overdue numbers, averages) — no prediction, no recommendation and no
     psychological inference.
 
+Post-Phase 10 UX refinement (Dashboard & `/tuton`, presentation only):
+
+-   Dashboard "Upcoming deadlines" and "Tuton overview" cap their item
+    lists with `max-h-[25rem] overflow-y-auto` scroll containers
+    (~7 visible rows) using the shared `scroll-subtle` scrollbar utility
+    (globals.css). Section headers, the progress bar and summaries stay
+    outside the scroll area. The Tuton overview additionally lists all
+    loaded sessions below the existing current/upcoming highlight, in the
+    same order the page already loads them. No query, sorting, filtering
+    or progress change.
+-   `/tuton` is course-first: each course renders as a collapsible card
+    (collapsed by default; multiple cards may be open at once) via the
+    small client component `app/(dashboard)/tuton/tuton-client.tsx`.
+    Toggling is local `useState` per card on a full-header `<button>` with
+    `aria-expanded`/`aria-controls` and an inline-SVG chevron (no icon
+    dependency); expand state is intentionally not stored in URL params.
+    Session rows, ordering, dates, statuses and progress math are
+    unchanged; the course Tuton link ("Open course Tuton") is preserved
+    inside the expanded panel.
+
 ## 4. Database
 
 ### profiles

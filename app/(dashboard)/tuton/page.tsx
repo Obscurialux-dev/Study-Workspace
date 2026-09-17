@@ -1,14 +1,10 @@
 import Link from "next/link";
 
+import { TutonCourseList } from "./tuton-client";
 import { PageHeader } from "@/components/shared/page-header";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorState } from "@/components/ui/error-state";
 import { ProgressBar } from "@/components/ui/progress-bar";
-import {
-  StatusBadge,
-  formatAcademicDate,
-  isPastDeadline,
-} from "@/components/shared/tuton-status";
 import { createClient } from "@/lib/supabase/server";
 import type { Course, TutonSession } from "@/types/database";
 
@@ -32,7 +28,7 @@ export default async function TutonPage() {
       .order("session_number", { ascending: true }),
   ]);
 
-  const courseList = courses ?? [];
+  const courseList: Course[] = courses ?? [];
   const allSessions = sessions ?? [];
 
   const sessionsByCourse = new Map<string, TutonSession[]>();
@@ -98,117 +94,15 @@ export default async function TutonPage() {
               </p>
             </div>
           ) : null}
-          <div className="space-y-4">
-            {courseList.map((course) => (
-              <CourseTutonBlock
-                key={course.id}
-                course={course}
-                sessions={sessionsByCourse.get(course.id) ?? []}
-              />
-            ))}
-          </div>
+          {/* Course-first collapsible list; all courses collapsed by default. */}
+          <TutonCourseList
+            items={courseList.map((course) => ({
+              course,
+              sessions: sessionsByCourse.get(course.id) ?? [],
+            }))}
+          />
         </>
       )}
     </>
-  );
-}
-
-function CourseTutonBlock({
-  course,
-  sessions,
-}: {
-  course: Course;
-  sessions: TutonSession[];
-}) {
-  const completed = sessions.filter(
-    (session) => session.status === "completed"
-  ).length;
-  const progress =
-    sessions.length > 0 ? (completed / sessions.length) * 100 : 0;
-
-  return (
-    <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          {course.color ? (
-            <span
-              className="h-3 w-3 shrink-0 rounded-full"
-              style={{ backgroundColor: course.color }}
-              aria-hidden="true"
-            />
-          ) : null}
-          <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
-              {course.code}
-            </p>
-            <Link
-              href={`/courses/${course.id}/tuton`}
-              className="text-base font-semibold text-slate-900 hover:underline"
-            >
-              {course.name}
-            </Link>
-          </div>
-        </div>
-        {sessions.length > 0 ? (
-          <span className="text-sm font-semibold text-slate-900">
-            {Math.round(progress)}%
-          </span>
-        ) : null}
-      </div>
-
-      {sessions.length === 0 ? (
-        <p className="mt-3 text-sm text-slate-500">
-          Tuton is not initialized for this course.{" "}
-          <Link
-            href={`/courses/${course.id}/tuton`}
-            className="font-medium text-slate-700 underline"
-          >
-            Open course Tuton
-          </Link>{" "}
-          to initialize the 8 sessions.
-        </p>
-      ) : (
-        <>
-          <ProgressBar value={progress} className="mt-3" />
-          <ul className="mt-2 divide-y divide-slate-100">
-            {sessions.map((session) => (
-              <li
-                key={session.id}
-                className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 py-2.5"
-              >
-                <div className="flex min-w-0 items-center gap-3">
-                  <span
-                    className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-900 text-[11px] font-semibold text-white"
-                    aria-hidden="true"
-                  >
-                    {session.session_number}
-                  </span>
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-slate-900">
-                      {session.title}
-                    </p>
-                    <p className="text-xs text-slate-500">
-                      {formatAcademicDate(session.start_date)} &ndash;{" "}
-                      {formatAcademicDate(session.end_date)}
-                      {session.activity_label
-                        ? ` · ${session.activity_label}`
-                        : ""}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  {isPastDeadline(session.end_date, session.status) ? (
-                    <span className="text-xs font-medium text-red-600">
-                      Past deadline
-                    </span>
-                  ) : null}
-                  <StatusBadge status={session.status} />
-                </div>
-              </li>
-            ))}
-          </ul>
-        </>
-      )}
-    </section>
   );
 }

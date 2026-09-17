@@ -271,6 +271,31 @@ new dependency, no Dashboard redesign.
 -   [ ] Actual Vercel deployment — user-executed (needs the user's
     GitHub/Supabase accounts; out of agent reach by design).
 
+Post-Phase 10 focused UX refinement (Dashboard & Tuton):
+
+-   [x] Dashboard: the "Upcoming deadlines" item list and the "Tuton
+    overview" session list render inside `max-h-[25rem] overflow-y-auto`
+    containers (~7 visible rows, scroll only when longer) using the shared
+    `scroll-subtle` scrollbar utility; headers, percentage, progress bar
+    and summaries stay outside the scroll area. No data fetching or
+    progress change.
+-   [x] Dashboard follow-up list-UX fix: the two-column grid uses
+    `items-start` so each card keeps its natural height (no stretch, no
+    empty space under the deadline list); the Tuton overview no longer has
+    a current/upcoming highlight card — every session appears exactly once
+    in the scrollable list — and the list is displayed session_number ASC →
+    stored start_date ASC → course code ASC ("this session → all
+    courses"). Stored data, the /tuton page and progress calculations are
+    unchanged.
+-   [x] `/tuton`: course-first collapsible list — every course is a card
+    collapsed by default (multiple may be open at once), toggled by an
+    accessible full-header `<button>` (`aria-expanded`, `aria-controls`,
+    keyboard operable) with an inline-SVG chevron (no new dependency).
+    Collapsed header shows course code, name, %, completed/total and the
+    existing progress bar; expanding shows the unchanged session rows.
+-   [x] Validation: `npx tsc --noEmit`, `npx eslint .` and
+    `npm run build` pass.
+
 ## 2. Current Task
 
 CURRENT_PHASE: Phase 10 (final phase — complete)
@@ -283,7 +308,11 @@ scoring and no tracked secrets. One accessibility defect was fixed (planner
 priority was color-only; it now has sr-only priority text). `.env.example` now
 marks the two public Supabase variables as the only required variables and the
 service-role/AI variables as reserved/unused. TypeScript, ESLint and the
-production build pass with zero errors. Vercel needs no code change: deploy
+production build pass with zero errors. A focused post-phase UX refinement is
+also complete: the Dashboard "Upcoming deadlines"/"Tuton overview" lists are
+scroll-capped at ~7 visible rows and `/tuton` is a course-first collapsible
+course list (collapsed by default) — presentation-only, no data, auth, RLS or
+business-logic change. Vercel needs no code change: deploy
 GitHub → Vercel with NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.
 The actual deployment is user-executed. No further phase is planned; do not
 extend scope beyond this point.

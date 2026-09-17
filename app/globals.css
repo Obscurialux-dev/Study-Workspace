@@ -17,3 +17,23 @@ body {
   color: var(--foreground);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
 }
+/* Subtle scrollbars for the long scrollable dashboard lists. Thin slate
+   thumb consistent with the design system; no extra dependency. */
+@utility scroll-subtle {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-slate-300, #cbd5e1) transparent;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--color-slate-300, #cbd5e1);
+    border-radius: 9999px;
+  }
+}
