@@ -188,12 +188,53 @@ and no adaptive algorithm.
 
 ### Phase 9: Study Analytics & Progress
 
--   [ ] Historical grade charts.
--   [ ] Long-term performance trends.
--   [ ] Study streaks.
--   [ ] Advanced analytics dashboard.
+-   [x] `/analytics` route in the dashboard shell with an Analytics sidebar
+    entry (after Planner) and one Dashboard quick-action link.
+-   [x] Overall study progress: courses, Tuton %, assignment %, discussion %,
+    exam topic preparation %, question bank size, quiz attempts and average
+    quiz score.
+-   [x] Course progress per course (same categories plus question count,
+    attempt count and average/latest quiz score), with the existing Phase 7
+    academic scores re-displayed from `lib/exam.ts` (no new grade formula).
+-   [x] Tuton analytics: total / completed / active / upcoming / past end date
+    (derived, status unchanged) / completion %, plus a per-course breakdown.
+-   [x] Assignment and discussion analytics: total, completed, incomplete,
+    derived overdue and completion %, per category.
+-   [x] Exam preparation analytics: total / completed / in progress / not
+    started / preparation %, plus per-course academic scores with
+    "Incomplete" / "Not available" / "Awaiting UAS" labels instead of invented
+    values.
+-   [x] Quiz analytics: question bank size, questions per course, attempts,
+    completed attempts, average / best / latest score (completed attempts
+    only), per-course question/attempt/score breakdown. No mastery, no
+    weak-topic detection, no readiness claim.
+-   [x] Study activity: recorded activity counts for the last 7 and 30 days
+    from existing `created_at`/`updated_at` timestamps, with a 7-day CSS/Tailwind
+    bar chart (no chart dependency) — labeled as activity, never study hours.
+-   [x] Progress trend: current-state metrics only; the page states explicitly
+    that no historical snapshots exist, so no fabricated trend is drawn.
+-   [x] Deterministic insights (restatements of the metrics); no prediction and
+    no AI-style recommendations.
+-   [x] Course filter via `?course=` (All Courses / single course) scoping every
+    metric, with URL-param navigation.
+-   [x] Empty states per data source ("No Tuton data", "No assignment data",
+    "No discussion data", "No exam preparation data", "No question bank data",
+    "No recorded activity") and "No data" instead of misleading 0%.
+-   [x] No migration: every metric is derived from the existing schema.
+-   [ ] Historical grade charts / long-term trend lines — deferred: the schema
+    stores no historical snapshots, so any curve would be fabricated. Only
+    current-state metrics are shown.
+-   [ ] Study streaks — deferred: no daily rollup is stored, and streaks are a
+    gamification feature outside Phase 9 scope.
 
-Do not start without explicit instruction.
+Acceptance: - `/analytics` shows overall, per-course, Tuton, deadline, exam
+preparation, quiz and activity metrics plus deterministic insights, filtered by
+`?course=`. - Every number is derived from existing tables with pure functions
+in `lib/analytics.ts`; no analytics/activity-tracking table and no migration
+were added. - Overdue/past-deadline and Tuton active/upcoming buckets are
+derived only; no stored status is mutated. - Academic scores come from
+`lib/exam.ts` and are unchanged; quiz scores stay practice-only. - Zero AI, no
+new dependency, no Dashboard redesign.
 
 ### Phase 10: Polish / UX / Deployment
 
@@ -209,22 +250,24 @@ Do not start without explicit instruction.
 
 ## 2. Current Task
 
-CURRENT_PHASE: Phase 8
+CURRENT_PHASE: Phase 9
 
-CURRENT_TASK: Phase 8 — Quiz & Practice is implemented and validated
-(typecheck, lint, build pass). Migration 00006 adds `questions`,
-`quiz_attempts` and `quiz_answers` with CHECK constraints, indexes,
-updated_at trigger and RLS. `/quiz` is the landing page (sidebar entry),
-`/quiz/questions` is the manual question bank (CRUD + search/course filter,
-optional exam topic/material references), `/quiz/practice` starts a practice
-quiz, `/quiz/practice/[attemptId]` is the runner (next/previous, navigator,
-review, submit), `/quiz/attempts` is the history and
-`/quiz/attempts/[attemptId]` is the result + per-question review. Scoring is
-server-side only and no correct answer is exposed during an active quiz. Quiz
-scores are practice only: `lib/exam.ts` and the Tuton/UAS/final score
-calculation are untouched. Zero AI, no timer, no adaptive testing, no
-analytics. Phase 9 (Study Analytics) must not start without explicit
-instruction.
+CURRENT_TASK: Phase 9 — Study Analytics & Progress is implemented and validated
+(typecheck, lint, build pass; analytics metric logic verified with executed
+assertions). `/analytics` is a protected dashboard-shell route (Analytics
+sidebar entry after Planner, plus one Dashboard quick-action link) with a
+`?course=` filter. It shows overall study progress, per-course progress, Tuton
+metrics (total/completed/active/upcoming/derived past-end-date), assignment and
+discussion metrics (total/completed/incomplete/derived overdue), exam topic
+metrics plus the existing Phase 7 academic scores from lib/exam.ts, quiz
+metrics (completed attempts only: average/best/latest), recorded activity for
+the last 7/30 days with a 7-day Tailwind bar chart, an explicit
+no-historical-snapshot trend note, and deterministic insights. All metrics are
+computed by pure functions in `lib/analytics.ts` from RLS-scoped reads with only
+the needed columns; no migration, no analytics table, no AI, no chart
+dependency, no status mutation and no Dashboard redesign. Deferred: historical
+grade charts/trends (no snapshot data) and streaks (out of scope). Phase 10
+must not start without explicit instruction.
 
 ## 3. Definition of Done
 

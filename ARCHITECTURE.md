@@ -73,7 +73,7 @@ Authenticated: - `/dashboard` - `/planner` - `/courses` -
 `/courses/[courseId]/exam` - `/tuton` - `/materials` - `/notes` -
 `/exam` - `/quiz` - `/quiz/questions` - `/quiz/practice` -
 `/quiz/practice/[attemptId]` - `/quiz/attempts` -
-`/quiz/attempts/[attemptId]`
+`/quiz/attempts/[attemptId]` - `/analytics`
 
 Course page harus menyediakan navigation internal untuk subpage course.
 
@@ -172,6 +172,45 @@ The Quiz & Practice workspace (`/quiz`, Phase 8):
 -   If a question is deleted, its answer rows are removed with it (cascade);
     the attempt keeps its stored totals and score, and the result page notes
     that some questions can no longer be reviewed.
+
+The Study Analytics workspace (`/analytics`, Phase 9):
+
+-   Read-only, deterministic analysis layer over the tables that already exist
+    (courses, tuton_sessions, materials, notes, assignments, discussions,
+    exam_topics, questions, quiz_attempts). No analytics table, no snapshots,
+    no daily logs, no `study_sessions`, no migration — and no AI.
+-   Metrics live in pure functions (`lib/analytics.ts`): completion counts,
+    Tuton buckets, deadline metrics, topic metrics, quiz metrics, activity and
+    insights. Every number is explainable from the stored rows.
+-   "Overdue" (Tuton end date, assignment/discussion deadline) and the
+    "active / upcoming" Tuton buckets are DERIVED from dates and from today in
+    Asia/Jakarta (`lib/planner.todayIso`). Analytics only reads: it never
+    mutates a stored status.
+-   Percentages without underlying records are `null` and rendered as
+    "No data" instead of a misleading 0%.
+-   Academic values (Tuton / UAS / Final per course) are re-displayed from
+    `lib/exam.ts`, the single source of truth. Analytics defines no new grade
+    formula, and practice quiz scores are never mixed into grades.
+-   Quiz metrics use COMPLETED attempts only; in-progress attempts are excluded
+    from the average, best and latest score. No mastery, weak-topic or
+    readiness metric is calculated.
+-   Activity is a COUNT of recorded activity events: one event per record per
+    local day, taken from the existing `created_at` / `updated_at` timestamps
+    (quiz attempts use `started_at` plus `completed_at`). Sources: materials,
+    notes, assignments, discussions, exam topics, quiz attempts. It is never
+    presented as study hours — the application has no time tracking.
+-   Windows: last 7 days (rolling, ending today, drives the bar chart) and last
+    30 days, both in Asia/Jakarta. The bars are plain Tailwind elements — no
+    chart dependency was added.
+-   No historical snapshots exist, so no historical trend curve is drawn; the
+    page says so explicitly and reports current-state metrics only.
+-   Course filter via `?course=` (All Courses aggregates everything; a selected
+    course scopes every row query in SQL). While filtered, only that course
+    participates in the calculation, so other courses can never show up as
+    empty data.
+-   Insights are deterministic restatements of the metrics above (counts,
+    overdue numbers, averages) — no prediction, no recommendation and no
+    psychological inference.
 
 ## 4. Database
 
@@ -462,6 +501,11 @@ Nothing in Phase 8 depends on `AI_PROVIDER`/`AI_API_KEY`, and no AI SDK,
 embedding, vector store, RAG pipeline or question-generation endpoint exists in
 the codebase.
 
+Phase 9 (Study Analytics & Progress) note: the analytics workspace is also
+ZERO AI. All metrics, activity counts and insights are deterministic and
+computed from existing rows; there is no AI interpretation, no AI
+recommendation and no model call anywhere in the analytics path.
+
 ## 8. Progress
 
 Course progress is derived from actual records.
@@ -492,6 +536,12 @@ Keep formula simple and configurable.
 Phase 8 note: no readiness, mastery or weak-topic calculation is implemented.
 Quiz scores are stored for practice and review only and are intentionally NOT
 fed into any readiness or grade formula.
+
+Phase 9 note: `/analytics` presents per-category completion percentages (Tuton,
+assignments, discussions, exam topics), the Phase 7 academic scores and the
+Phase 8 practice quiz metrics as separate read-only metrics. It does not compute
+the Dashboard's combined 50/25/25 progress value, introduces no new weighting,
+and changes no stored value.
 
 ## 9. File Handling
 

@@ -12,6 +12,7 @@ const PROTECTED_PREFIXES = [
   "/notes",
   "/exam",
   "/quiz",
+  "/analytics",
 ];
 
 function isProtected(pathname: string) {

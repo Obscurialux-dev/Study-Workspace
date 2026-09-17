@@ -90,6 +90,9 @@ export function DashboardQuickActions() {
         <Link href="/tuton" className={outlineButton}>
           View Tuton
         </Link>
+        <Link href="/analytics" className={outlineButton}>
+          View analytics
+        </Link>
       </div>
     </section>
   );
