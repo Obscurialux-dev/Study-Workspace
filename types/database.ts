@@ -40,6 +40,7 @@ export type Database = {
           semester: string | null;
           color: string | null;
           icon: string | null;
+          uas_score: number | null;
           created_at: string;
           updated_at: string;
         };
@@ -52,6 +53,7 @@ export type Database = {
           semester?: string | null;
           color?: string | null;
           icon?: string | null;
+          uas_score?: number | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -64,6 +66,7 @@ export type Database = {
           semester?: string | null;
           color?: string | null;
           icon?: string | null;
+          uas_score?: number | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -236,6 +239,10 @@ export type Database = {
           status: string;
           external_url: string | null;
           file_path: string | null;
+          score: number | null;
+          score_max: number | null;
+          feedback: string | null;
+          score_recorded_at: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -250,6 +257,10 @@ export type Database = {
           status?: string;
           external_url?: string | null;
           file_path?: string | null;
+          score?: number | null;
+          score_max?: number | null;
+          feedback?: string | null;
+          score_recorded_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -264,6 +275,10 @@ export type Database = {
           status?: string;
           external_url?: string | null;
           file_path?: string | null;
+          score?: number | null;
+          score_max?: number | null;
+          feedback?: string | null;
+          score_recorded_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -295,6 +310,10 @@ export type Database = {
           external_url: string | null;
           response_text: string | null;
           status: string;
+          score: number | null;
+          score_max: number | null;
+          feedback: string | null;
+          score_recorded_at: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -308,6 +327,10 @@ export type Database = {
           external_url?: string | null;
           response_text?: string | null;
           status?: string;
+          score?: number | null;
+          score_max?: number | null;
+          feedback?: string | null;
+          score_recorded_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -321,6 +344,10 @@ export type Database = {
           external_url?: string | null;
           response_text?: string | null;
           status?: string;
+          score?: number | null;
+          score_max?: number | null;
+          feedback?: string | null;
+          score_recorded_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -337,6 +364,60 @@ export type Database = {
             columns: ["session_id"];
             isOneToOne: false;
             referencedRelation: "tuton_sessions";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      exam_topics: {
+        Row: {
+          id: string;
+          user_id: string;
+          course_id: string;
+          material_id: string | null;
+          title: string;
+          description: string | null;
+          status: string;
+          notes: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          course_id: string;
+          material_id?: string | null;
+          title: string;
+          description?: string | null;
+          status?: string;
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          course_id?: string;
+          material_id?: string | null;
+          title?: string;
+          description?: string | null;
+          status?: string;
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "exam_topics_course_id_fkey";
+            columns: ["course_id"];
+            isOneToOne: false;
+            referencedRelation: "courses";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "exam_topics_material_id_fkey";
+            columns: ["material_id"];
+            isOneToOne: false;
+            referencedRelation: "materials";
             referencedColumns: ["id"];
           },
         ];
@@ -371,3 +452,5 @@ export type Note = Database["public"]["Tables"]["notes"]["Row"];
 export type Assignment = Database["public"]["Tables"]["assignments"]["Row"];
 
 export type Discussion = Database["public"]["Tables"]["discussions"]["Row"];
+
+export type ExamTopic = Database["public"]["Tables"]["exam_topics"]["Row"];

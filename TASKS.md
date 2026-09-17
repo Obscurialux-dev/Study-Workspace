@@ -15,7 +15,7 @@ before making a large architectural change.
 
 ## 1. Development Phases
 
-### Phase 1: Foundation
+### Phase 1: Foundation + Auth
 
 -   [x] Initialize Next.js + TypeScript.
 -   [x] Configure Tailwind/shadcn if used.
@@ -72,7 +72,7 @@ Session 8: 2 Nov 2026 - 8 Nov 2026 Material Inisiasi 8 + Diskusi 8
 Important: - Keep the exact supplied dates. - Do not normalize
 overlapping dates. - Do not assume every session is exactly 7 days.
 
-### Phase 4: Academic Workspace
+### Phase 4: Materials, Notes, Assignments, Discussions
 
 -   [x] Materials CRUD.
 -   [x] Notes CRUD.
@@ -99,7 +99,7 @@ progress uses Tuton 50% / Assignments 25% / Discussions 25% with
 zero-item categories handled safely. - Sections degrade gracefully when
 any category is empty.
 
-### Phase 6: Study Planner
+### Phase 6: Study Planner / Study Schedule
 
 -   [x] `/planner` route in the dashboard shell with sidebar entry.
 -   [x] Today view (priorities derived from existing data).
@@ -117,38 +117,54 @@ completion state, no AI, no calendar integration. - Week navigation and
 course filter work through URL params with plain Links. - Today is
 computed in Asia/Jakarta via Intl to avoid UTC date shifts.
 
-### Phase 7: AI Foundation
+### Phase 7: Exam Preparation
 
--   [ ] Create AI provider interface.
--   [ ] Implement configured provider.
--   [ ] Server-side API access.
--   [ ] Prompt/context builder.
--   [ ] Input/output validation.
--   [ ] Error handling.
--   [ ] Usage/quota friendly behavior.
+-   [x] `/exam` exam preparation workspace with course filter
+    (`?course=` URL param; All Courses / single course).
+-   [x] Manual score recording on existing Discussions and Assignments
+    (score, score_max, feedback, score_recorded_at) — migration 00005.
+-   [x] Individual scores stay visible; averages computed from recorded
+    scores only (missing scores never counted as zero).
+-   [x] Tuton score: Kehadiran 20% (default 100) + Diskusi average 30% +
+    Tugas average 50%; labeled "estimated" while items are ungraded.
+-   [x] UAS score entry per course (0–100, courses.uas_score).
+-   [x] Final course score: Tuton 30% + UAS 70%; "Awaiting UAS" when UAS
+    is not entered.
+-   [x] What-if UAS calculator with required > 100 and <= 0 handling.
+-   [x] Exam preparation topics (exam_topics) CRUD with status
+    (not_started/in_progress/completed) and optional material reference.
+-   [x] Preparation progress = completed topics / total topics with
+    zero-topic safety and the existing ProgressBar.
+-   [x] Empty states: no courses, no topics, no Discussion scores, no
+    Assignment scores, UAS not entered.
+-   [x] RLS on exam_topics + ownership enforcement on all score writes.
 
-First AI features: 1. Explain material. 2. Summarize material. 3.
-Generate quiz.
+Acceptance: - `/exam` shows per-course academic summary (Tuton / UAS /
+Final), preparation progress, topics, Tuton scores, and the what-if
+calculator. - Dashboard workspace progress (Tuton 50% / Assignments 25%
+/ Discussions 25%) is untouched. - No quiz engine, no AI, no analytics.
 
-Do not implement adaptive learning yet.
+### Phase 8: Quiz & Practice
 
-### Phase 8: Exam System
-
--   [ ] Study topics.
+-   [ ] Study topics (question-level mastery).
 -   [ ] Question bank.
 -   [ ] Quiz attempts.
 -   [ ] Quiz results.
 -   [ ] Weak-topic calculation.
 -   [ ] Practice exam.
 
-### Phase 9: RAG
+Do not start without explicit instruction.
 
-Start simple: - \[ \] Material text search. - \[ \] Relevant context
-selection. - \[ \] Context length limits. - \[ \] Source references.
+### Phase 9: Study Analytics & Progress
 
-Only add embeddings/pgvector if text search becomes insufficient.
+-   [ ] Historical grade charts.
+-   [ ] Long-term performance trends.
+-   [ ] Study streaks.
+-   [ ] Advanced analytics dashboard.
 
-### Phase 10: Polish
+Do not start without explicit instruction.
+
+### Phase 10: Polish / UX / Deployment
 
 -   [ ] Responsive audit.
 -   [ ] Accessibility basics.
@@ -162,15 +178,18 @@ Only add embeddings/pgvector if text search becomes insufficient.
 
 ## 2. Current Task
 
-CURRENT_PHASE: Phase 6
+CURRENT_PHASE: Phase 7
 
-CURRENT_TASK: Phase 6 — Study Planner is complete and validated
-(typecheck, lint, build pass). `/planner` is a server-rendered derived
-view of existing data (courses, tuton_sessions, assignments,
-discussions, materials) with Today / Upcoming / Weekly overview, course
-filter, and week navigation via URL params. No migration, no new
-completion state, no AI. Phase 7 (AI Foundation) must not start without
-explicit instruction.
+CURRENT_TASK: Phase 7 — Exam Preparation is implemented and validated
+(typecheck, lint, build pass). `/exam` is an exam preparation and
+grade-tracking workspace: per-course academic summary (Tuton 30% + UAS
+70%; inside Tuton Kehadiran 20% + Diskusi 30% + Tugas 50%), manual
+score recording on existing assignments/discussions (migration 00005
+adds score fields and the exam_topics table), UAS entry, final course
+score, what-if UAS calculator, study topics with optional material
+references, and preparation progress. Missing scores are never treated
+as zero. No AI, no quiz engine, no analytics. Phase 8 (Quiz & Practice)
+must not start without explicit instruction.
 
 ## 3. Definition of Done
 

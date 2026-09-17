@@ -91,6 +91,36 @@ The Study Planner (`/planner`, derived view):
     date. Week navigation (Mon-based) uses plain JS date math via URL
     params (`?week=`, `?course=`) — no date library.
 
+The Exam Preparation workspace (`/exam`, Phase 7):
+
+-   Pure study preparation and manual grade tracking. No quiz engine,
+    no automated grading, no AI. Phase 8 (Quiz & Practice) comes later.
+-   Academic grade model (a DIFFERENT system from the Dashboard
+    workspace progress in section 8):
+    `Final = Tuton × 0.30 + UAS × 0.70`, and inside the Tuton
+    component: `Tuton = Kehadiran × 0.20 + Diskusi × 0.30 + Tugas × 0.50`
+    (0–100 scale; Kehadiran uses the fixed default 100 when the user
+    participates in Tuton).
+-   Discussion/Assignment scores are recorded manually on the existing
+    entities (`score`, `score_max`, `feedback`, `score_recorded_at`).
+    Missing scores are never treated as zero: averages use recorded
+    scores only, and incomplete Tuton/Final calculations are labeled
+    "estimated" or "awaiting".
+-   UAS is stored on `courses.uas_score` (0–100; null = "Awaiting UAS";
+    missing UAS is never treated as zero).
+-   Study topics live in `exam_topics` (status not_started/in_progress/
+    completed, optional `material_id` reference to existing materials —
+    reference only, no content duplication; topic links navigate to the
+    existing material route).
+-   Preparation progress = completed topics / total topics × 100, with
+    zero-topic safety (0%, never NaN/Infinity).
+-   Course filter via the `?course=` URL param; data is grouped per
+    course and never mixed. `/courses/[courseId]/exam` redirects to
+    `/exam?course=[courseId]`.
+-   The what-if UAS calculator is pure deterministic math
+    (`Required UAS = (Target − Tuton × 0.30) / 0.70`) with explicit
+    handling for required > 100 and <= 0. It does not predict results.
+
 ## 4. Database
 
 ### profiles
@@ -109,6 +139,7 @@ The Study Planner (`/planner`, derived view):
 -   description
 -   semester
 -   color/icon optional
+-   uas_score nullable (0–100; null = UAS not entered yet) — Phase 7
 -   created_at
 -   updated_at
 
@@ -165,6 +196,10 @@ activity_type: - discussion - assignment
 -   status
 -   external_url nullable
 -   file_path nullable
+-   score nullable (manually recorded tutor/lecturer grade) — Phase 7
+-   score_max nullable (defaults to 100 when absent) — Phase 7
+-   feedback nullable — Phase 7
+-   score_recorded_at nullable — Phase 7
 -   created_at
 -   updated_at
 
@@ -179,10 +214,30 @@ activity_type: - discussion - assignment
 -   external_url nullable
 -   response_text nullable
 -   status
+-   score nullable (manually recorded tutor/lecturer grade) — Phase 7
+-   score_max nullable (defaults to 100 when absent) — Phase 7
+-   feedback nullable — Phase 7
+-   score_recorded_at nullable — Phase 7
 -   created_at
 -   updated_at
 
-### study_topics
+### exam_topics
+
+-   id
+-   user_id
+-   course_id
+-   material_id nullable (reference to an existing material; no content
+    duplication)
+-   title
+-   description nullable
+-   status (not_started | in_progress | completed)
+-   notes nullable
+-   created_at
+-   updated_at
+
+The following are planned for later phases and not implemented yet:
+
+### study_topics (planned, Phase 8)
 
 -   id
 -   course_id
@@ -192,7 +247,7 @@ activity_type: - discussion - assignment
 -   created_at
 -   updated_at
 
-### questions
+### questions (planned, Phase 8)
 
 -   id
 -   course_id
@@ -206,7 +261,7 @@ activity_type: - discussion - assignment
 -   source_type
 -   created_at
 
-### quiz_attempts
+### quiz_attempts (planned, Phase 8)
 
 -   id
 -   user_id
@@ -216,7 +271,7 @@ activity_type: - discussion - assignment
 -   started_at
 -   completed_at
 
-### quiz_answers
+### quiz_answers (planned, Phase 8)
 
 -   id
 -   attempt_id
@@ -240,6 +295,8 @@ profiles
        +-- materials
        |     |
        |     +-- notes
+       |
+       +-- exam_topics
        |
        +-- study_topics
        |     |
@@ -329,6 +386,12 @@ never be NaN/Infinity.
 Do not store a manually editable percentage unless necessary.
 
 Exam readiness is separate and should not be treated as course progress.
+
+Phase 7 note: the academic GRADE (Exam Preparation) is a separate system
+from the workspace progress above. Final course score =
+(Tuton score × 30%) + (UAS score × 70%), where the Tuton score itself =
+(Kehadiran 100 × 20%) + (Diskusi average × 30%) + (Tugas average × 50%).
+The Dashboard 50/25/25 formula is not modified by Phase 7.
 
 Initial exam readiness can use: - topic mastery - quiz scores -
 completed practice exams
