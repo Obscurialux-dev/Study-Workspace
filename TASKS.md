@@ -146,14 +146,45 @@ calculator. - Dashboard workspace progress (Tuton 50% / Assignments 25%
 
 ### Phase 8: Quiz & Practice
 
--   [ ] Study topics (question-level mastery).
--   [ ] Question bank.
--   [ ] Quiz attempts.
--   [ ] Quiz results.
--   [ ] Weak-topic calculation.
--   [ ] Practice exam.
+-   [x] `/quiz` landing page in the dashboard shell with a sidebar entry
+    (Question Bank / Practice Quiz / Quiz History).
+-   [x] Manual question bank (`questions`, multiple choice A–D only) with
+    create/edit/delete/view, search + course filter, and optional exam
+    topic/material references (references only — no data duplication).
+-   [x] Server-side validation of course/topic/material ownership and of
+    cross-course links, plus RLS on `questions`.
+-   [x] Practice quiz setup (course required, question count, optional exam
+    topic/material) with an availability preview.
+-   [x] Quiz attempts (`quiz_attempts` + `quiz_answers`, migration 00006):
+    the attempt and its questions are stored before answering starts,
+    questions are picked server-side in random order, and fewer available
+    questions than requested is not an error.
+-   [x] Quiz runner: next/previous, question navigator, answer review before
+    submit, per-answer persistence, submit confirmation when questions are
+    unanswered (no timer).
+-   [x] Server-side scoring only: `score = correct_count / total_questions ×
+    100`; unanswered questions count as incorrect; the client never supplies
+    the score; empty attempts are refused.
+-   [x] Quiz results: score, correct/total, percentage, status, timestamps and
+    per-question review (selected answer, correct answer, explanation).
+-   [x] No correct-answer leakage during an active quiz (`is_correct` stays
+    null until submit; the runner page never selects `correct_answer` or
+    `explanation`).
+-   [x] Quiz history (`/quiz/attempts`) with a course filter and
+    in-progress/completed state; `/quiz/attempts/[attemptId]` opens the
+    result review.
+-   [x] RLS on questions/quiz_attempts/quiz_answers, including the
+    attempt-ownership chain for answers and "no writes after submit".
+-   [ ] Study topics (question-level mastery) — deferred to Phase 9.
+-   [ ] Weak-topic calculation — deferred to Phase 9.
+-   [ ] Practice exam mode — deferred to Phase 9.
 
-Do not start without explicit instruction.
+Acceptance: - Questions can be created, edited, filtered and deleted manually;
+practice quizzes can be started, answered, left/resumed and submitted; the
+result and its review are calculated by the server. - Quiz scores are practice
+only: Tuton/UAS/final scores and `lib/exam.ts` are untouched. - Zero AI: no
+question generation, no LLM, no embeddings/RAG, no document parsing, no timer
+and no adaptive algorithm.
 
 ### Phase 9: Study Analytics & Progress
 
@@ -178,18 +209,22 @@ Do not start without explicit instruction.
 
 ## 2. Current Task
 
-CURRENT_PHASE: Phase 7
+CURRENT_PHASE: Phase 8
 
-CURRENT_TASK: Phase 7 — Exam Preparation is implemented and validated
-(typecheck, lint, build pass). `/exam` is an exam preparation and
-grade-tracking workspace: per-course academic summary (Tuton 30% + UAS
-70%; inside Tuton Kehadiran 20% + Diskusi 30% + Tugas 50%), manual
-score recording on existing assignments/discussions (migration 00005
-adds score fields and the exam_topics table), UAS entry, final course
-score, what-if UAS calculator, study topics with optional material
-references, and preparation progress. Missing scores are never treated
-as zero. No AI, no quiz engine, no analytics. Phase 8 (Quiz & Practice)
-must not start without explicit instruction.
+CURRENT_TASK: Phase 8 — Quiz & Practice is implemented and validated
+(typecheck, lint, build pass). Migration 00006 adds `questions`,
+`quiz_attempts` and `quiz_answers` with CHECK constraints, indexes,
+updated_at trigger and RLS. `/quiz` is the landing page (sidebar entry),
+`/quiz/questions` is the manual question bank (CRUD + search/course filter,
+optional exam topic/material references), `/quiz/practice` starts a practice
+quiz, `/quiz/practice/[attemptId]` is the runner (next/previous, navigator,
+review, submit), `/quiz/attempts` is the history and
+`/quiz/attempts/[attemptId]` is the result + per-question review. Scoring is
+server-side only and no correct answer is exposed during an active quiz. Quiz
+scores are practice only: `lib/exam.ts` and the Tuton/UAS/final score
+calculation are untouched. Zero AI, no timer, no adaptive testing, no
+analytics. Phase 9 (Study Analytics) must not start without explicit
+instruction.
 
 ## 3. Definition of Done
 

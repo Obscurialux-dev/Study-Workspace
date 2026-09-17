@@ -109,6 +109,20 @@ const NAV_ITEMS: { href: string; label: string; icon: ReactNode }[] = [
       </NavIcon>
     ),
   },
+  {
+    href: "/quiz",
+    label: "Quiz",
+    icon: (
+      <NavIcon>
+        <path d="M9 6h11" />
+        <path d="M9 12h11" />
+        <path d="M9 18h11" />
+        <path d="m3 6 1.2 1.2L7 4.8" />
+        <path d="m3 12 1.2 1.2L7 10.8" />
+        <path d="m3 18 1.2 1.2L7 16.8" />
+      </NavIcon>
+    ),
+  },
 ];
 
 function isActive(pathname: string, href: string) {
