@@ -66,13 +66,30 @@ jika reusable atau sudah terlalu besar.
 
 Public: - `/` - `/login`
 
-Authenticated: - `/dashboard` - `/courses` - `/courses/[courseId]` -
-`/courses/[courseId]/tuton` - `/courses/[courseId]/materials` -
-`/courses/[courseId]/notes` - `/courses/[courseId]/assignments` -
-`/courses/[courseId]/discussions` - `/courses/[courseId]/exam` -
-`/tuton` - `/materials` - `/notes` - `/exam`
+Authenticated: - `/dashboard` - `/planner` - `/courses` -
+`/courses/[courseId]` - `/courses/[courseId]/tuton` -
+`/courses/[courseId]/materials` - `/courses/[courseId]/notes` -
+`/courses/[courseId]/assignments` - `/courses/[courseId]/discussions` -
+`/courses/[courseId]/exam` - `/tuton` - `/materials` - `/notes` -
+`/exam`
 
 Course page harus menyediakan navigation internal untuk subpage course.
+
+The Study Planner (`/planner`, derived view):
+
+-   Pure derived view over existing tables (courses, tuton_sessions,
+    assignments, discussions, materials). No `study_tasks` table, no new
+    completion state, no calendar integration.
+-   Statuses are read from the owning entity (assignments, discussions,
+    tuton_sessions). Completed items are excluded from active priorities.
+-   Deterministic priority: high = overdue/due ≤ 3 days or active Tuton
+    ending ≤ 3 days; medium = later deadlines, upcoming Tuton ≤ 7 days;
+    low = material review (materials have no deadline semantics and are
+    always labeled as review).
+-   "Today" is computed in Asia/Jakarta via `Intl.DateTimeFormat`
+    (`lib/planner.ts`) so UTC server time cannot shift the displayed
+    date. Week navigation (Mon-based) uses plain JS date math via URL
+    params (`?week=`, `?course=`) — no date library.
 
 ## 4. Database
 

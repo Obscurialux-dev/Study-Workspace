@@ -99,7 +99,25 @@ progress uses Tuton 50% / Assignments 25% / Discussions 25% with
 zero-item categories handled safely. - Sections degrade gracefully when
 any category is empty.
 
-### Phase 6: AI Foundation
+### Phase 6: Study Planner
+
+-   [x] `/planner` route in the dashboard shell with sidebar entry.
+-   [x] Today view (priorities derived from existing data).
+-   [x] Upcoming view.
+-   [x] Weekly overview (Mon–Sun buckets, prev/next week navigation).
+-   [x] Deterministic priority model (high/medium/low).
+-   [x] Course filter (URL param, reuses existing course records).
+-   [x] Statuses read from existing entities (no duplicate completion state).
+-   [x] Material review items labeled as deadline-free study items.
+-   [x] Empty states (no courses, no items today, no upcoming, filtered).
+
+Acceptance: - Planner derives everything from courses, tuton_sessions,
+assignments, discussions, and materials. No new migration, no new
+completion state, no AI, no calendar integration. - Week navigation and
+course filter work through URL params with plain Links. - Today is
+computed in Asia/Jakarta via Intl to avoid UTC date shifts.
+
+### Phase 7: AI Foundation
 
 -   [ ] Create AI provider interface.
 -   [ ] Implement configured provider.
@@ -114,7 +132,7 @@ Generate quiz.
 
 Do not implement adaptive learning yet.
 
-### Phase 7: Exam System
+### Phase 8: Exam System
 
 -   [ ] Study topics.
 -   [ ] Question bank.
@@ -123,14 +141,14 @@ Do not implement adaptive learning yet.
 -   [ ] Weak-topic calculation.
 -   [ ] Practice exam.
 
-### Phase 8: RAG
+### Phase 9: RAG
 
 Start simple: - \[ \] Material text search. - \[ \] Relevant context
 selection. - \[ \] Context length limits. - \[ \] Source references.
 
 Only add embeddings/pgvector if text search becomes insufficient.
 
-### Phase 9: Polish
+### Phase 10: Polish
 
 -   [ ] Responsive audit.
 -   [ ] Accessibility basics.
@@ -144,17 +162,15 @@ Only add embeddings/pgvector if text search becomes insufficient.
 
 ## 2. Current Task
 
-CURRENT_PHASE: Phase 5
+CURRENT_PHASE: Phase 6
 
-CURRENT_TASK: Phase 5 — Dashboard is complete and validated (typecheck,
-lint, build pass). The dashboard is a server component reading all data
-through the RLS-scoped Supabase client; course progress uses Tuton 50% /
-Assignments 25% / Discussions 25% (zero-item categories contribute 0%,
-weights are never renormalized). The "Add course" action reuses the
-existing CourseForm + createCourse flow.
-
-Phase 5 (Dashboard) is complete. Do not implement Phase 6 (AI
-Foundation) without explicit instruction.
+CURRENT_TASK: Phase 6 — Study Planner is complete and validated
+(typecheck, lint, build pass). `/planner` is a server-rendered derived
+view of existing data (courses, tuton_sessions, assignments,
+discussions, materials) with Today / Upcoming / Weekly overview, course
+filter, and week navigation via URL params. No migration, no new
+completion state, no AI. Phase 7 (AI Foundation) must not start without
+explicit instruction.
 
 ## 3. Definition of Done
 
