@@ -87,12 +87,17 @@ AI.
 
 ### Phase 5: Dashboard
 
--   [ ] Course progress cards.
--   [ ] Tuton progress.
--   [ ] Upcoming deadlines.
--   [ ] Recent activity.
--   [ ] Quick actions.
--   [ ] Empty states.
+-   [x] Course progress cards.
+-   [x] Tuton progress.
+-   [x] Upcoming deadlines.
+-   [x] Recent activity.
+-   [x] Quick actions.
+-   [x] Empty states.
+
+Acceptance: - Dashboard shows real RLS-scoped Supabase data. - Course
+progress uses Tuton 50% / Assignments 25% / Discussions 25% with
+zero-item categories handled safely. - Sections degrade gracefully when
+any category is empty.
 
 ### Phase 6: AI Foundation
 
@@ -141,14 +146,15 @@ Only add embeddings/pgvector if text search becomes insufficient.
 
 CURRENT_PHASE: Phase 5
 
-CURRENT_TASK: Phase 5 — Dashboard (course progress cards, Tuton
-progress, upcoming deadlines, recent activity, quick actions, empty
-states). The broader course progress formula (Tuton 50%, Assignments
-25%, Discussions 25%) is introduced here.
+CURRENT_TASK: Phase 5 — Dashboard is complete and validated (typecheck,
+lint, build pass). The dashboard is a server component reading all data
+through the RLS-scoped Supabase client; course progress uses Tuton 50% /
+Assignments 25% / Discussions 25% (zero-item categories contribute 0%,
+weights are never renormalized). The "Add course" action reuses the
+existing CourseForm + createCourse flow.
 
-Phase 4 (Academic Workspace) is complete and validated (typecheck, lint,
-build pass). Do not implement AI, exam simulation, or advanced
-analytics yet.
+Phase 5 (Dashboard) is complete. Do not implement Phase 6 (AI
+Foundation) without explicit instruction.
 
 ## 3. Definition of Done
 

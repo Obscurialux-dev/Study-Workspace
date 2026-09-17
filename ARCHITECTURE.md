@@ -304,6 +304,11 @@ Course progress is derived from actual records.
 Initial formula: - Tuton completion: 50% - Assignments: 25% -
 Discussions: 25%
 
+A category with no records (e.g. a course without Tuton sessions,
+assignments, or discussions) contributes 0% to the formula; weights are
+never renormalized. Division by zero is handled in code so progress can
+never be NaN/Infinity.
+
 Do not store a manually editable percentage unless necessary.
 
 Exam readiness is separate and should not be treated as course progress.
