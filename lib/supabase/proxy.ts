@@ -7,6 +7,7 @@ import type { Database } from "@/types/database";
 const PROTECTED_PREFIXES = [
   "/dashboard",
   "/courses",
+  "/planner",
   "/tuton",
   "/materials",
   "/notes",

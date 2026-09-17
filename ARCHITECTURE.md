@@ -583,6 +583,14 @@ AI_API_KEY=
 
 Never commit `.env`.
 
+Phase 10 note: only `NEXT_PUBLIC_SUPABASE_URL` and
+`NEXT_PUBLIC_SUPABASE_ANON_KEY` are actually required by the shipped
+application (browser client, server client and proxy all use the anon key
+under RLS). `SUPABASE_SERVICE_ROLE_KEY` and the `AI_*` variables are reserved
+for the future AI layer and are currently unused; `.env.example` marks them
+as such so Vercel configuration only needs the two public variables. No
+service-role key exists anywhere in the code and no secret is tracked in git.
+
 ## 11. Error Handling
 
 Every async operation needs: - loading state - success feedback - error

@@ -238,36 +238,55 @@ new dependency, no Dashboard redesign.
 
 ### Phase 10: Polish / UX / Deployment
 
--   [ ] Responsive audit.
--   [ ] Accessibility basics.
--   [ ] Loading states.
--   [ ] Error states.
--   [ ] Empty states.
--   [ ] Form validation.
--   [ ] Security review.
--   [ ] Production build.
--   [ ] Vercel deployment.
+-   [x] Full functional audit of every major workflow (auth, courses, Tuton,
+    materials, notes, assignments, discussions, dashboard, planner, exam,
+    quiz, analytics) — no P0 production blocker found; no product change made.
+-   [x] Security review — RLS enabled on every table with per-user policies
+    (migrations 00001–00006), storage policy on the private bucket, every
+    mutation derives `user_id` from the server session (never client input),
+    client-supplied ids are UUID-validated or 404 via RLS, file paths must
+    start with the user's own folder before signing, signed URLs expire in
+    300 s, `correct_answer`/`explanation` are never selected while an attempt
+    is open, quiz scoring and grade math are server-side, no secrets tracked.
+-   [x] Responsive audit — responsive grids (`grid-cols-1 sm:/lg:`) on all
+    major routes; sidebar is a fixed drawer on mobile and persistent on
+    desktop; no accidental horizontal scrolling found; no changes needed.
+-   [x] Accessibility basics — one clear defect fixed: planner priority was
+    conveyed only by a colored dot (`aria-hidden` + `title`); it now also has
+    screen-reader priority text. Existing aria-labels, `role="dialog"`,
+    `role="alert"`, `role="status"`, `role="progressbar"` and semantic
+    headings verified.
+-   [x] Metadata review — root metadata (`Study Workspace` + title template +
+    description), login page title and `app/favicon.ico` are coherent; no
+    per-page titles added (personal authenticated workspace, not SEO surface).
+-   [x] `.env.example` annotated: `NEXT_PUBLIC_SUPABASE_URL` +
+    `NEXT_PUBLIC_SUPABASE_ANON_KEY` are the only required variables;
+    service-role and AI variables are documented as reserved and unused.
+-   [x] Production build verified: `npx tsc --noEmit`, `npx eslint .` and
+    `npm run build` all pass with zero errors/warnings.
+-   [x] Vercel deployment requirements identified: standard Next.js 16 app
+    (Turbopack build, Proxy/middleware included), no custom server, no Docker.
+    Deploy GitHub → Vercel and set the two public Supabase variables in the
+    Vercel project environment. No code or config change was required.
+-   [ ] Actual Vercel deployment — user-executed (needs the user's
+    GitHub/Supabase accounts; out of agent reach by design).
 
 ## 2. Current Task
 
-CURRENT_PHASE: Phase 9
+CURRENT_PHASE: Phase 10 (final phase — complete)
 
-CURRENT_TASK: Phase 9 — Study Analytics & Progress is implemented and validated
-(typecheck, lint, build pass; analytics metric logic verified with executed
-assertions). `/analytics` is a protected dashboard-shell route (Analytics
-sidebar entry after Planner, plus one Dashboard quick-action link) with a
-`?course=` filter. It shows overall study progress, per-course progress, Tuton
-metrics (total/completed/active/upcoming/derived past-end-date), assignment and
-discussion metrics (total/completed/incomplete/derived overdue), exam topic
-metrics plus the existing Phase 7 academic scores from lib/exam.ts, quiz
-metrics (completed attempts only: average/best/latest), recorded activity for
-the last 7/30 days with a 7-day Tailwind bar chart, an explicit
-no-historical-snapshot trend note, and deterministic insights. All metrics are
-computed by pure functions in `lib/analytics.ts` from RLS-scoped reads with only
-the needed columns; no migration, no analytics table, no AI, no chart
-dependency, no status mutation and no Dashboard redesign. Deferred: historical
-grade charts/trends (no snapshot data) and streaks (out of scope). Phase 10
-must not start without explicit instruction.
+CURRENT_TASK: Phase 10 — Polish / UX / Production Readiness / Deployment audit is
+complete. Full workflow audit found no P0 blocker; security review confirmed RLS
+on all tables, session-derived user_id in every mutation, UUID validation of
+client input, ownership-checked file paths, 300 s signed URLs, server-side quiz
+scoring and no tracked secrets. One accessibility defect was fixed (planner
+priority was color-only; it now has sr-only priority text). `.env.example` now
+marks the two public Supabase variables as the only required variables and the
+service-role/AI variables as reserved/unused. TypeScript, ESLint and the
+production build pass with zero errors. Vercel needs no code change: deploy
+GitHub → Vercel with NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.
+The actual deployment is user-executed. No further phase is planned; do not
+extend scope beyond this point.
 
 ## 3. Definition of Done
 

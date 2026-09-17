@@ -103,11 +103,13 @@ function PlannerRow({ item }: { item: PlannerItem }) {
       href={item.href}
       className="flex items-center gap-3 rounded-lg border border-slate-200 bg-white px-4 py-3 transition-colors hover:border-slate-300 hover:bg-slate-50"
     >
-      <span
-        className={`h-2 w-2 shrink-0 rounded-full ${PRIORITY_STYLES[item.priority]}`}
-        aria-hidden="true"
-        title={`Priority: ${item.priority}`}
-      />
+      <span className="flex items-center">
+        <span
+          className={`h-2 w-2 shrink-0 rounded-full ${PRIORITY_STYLES[item.priority]}`}
+          aria-hidden="true"
+        />
+        <span className="sr-only">Priority: {item.priority}</span>
+      </span>
       <span className="min-w-0 flex-1">
         <span className="block truncate text-sm font-medium text-slate-900">
           {item.title}
@@ -423,6 +425,9 @@ export default async function PlannerPage({
                               className={`mr-1.5 inline-block h-1.5 w-1.5 rounded-full align-middle ${PRIORITY_STYLES[item.priority]}`}
                               aria-hidden="true"
                             />
+                            <span className="sr-only">
+                              Priority: {item.priority}.
+                            </span>
                             {item.title}
                           </Link>
                           <span className="block pl-3 text-xs text-slate-400">
